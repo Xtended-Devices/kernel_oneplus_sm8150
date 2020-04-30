@@ -633,16 +633,10 @@ static void  pstore_console_init(void )
     if (size > psinfo->bufsize)
         size = psinfo->bufsize;
 
-    if (oops_in_progress) {
-        if (!spin_trylock_irqsave(&psinfo->buf_lock, flags))
-            return;
-    } else {
-        spin_lock_irqsave(&psinfo->buf_lock, flags);
-    }
     memset(record.buf, ' ', size);
 
     psinfo->write(&record);
-    spin_unlock_irqrestore(&psinfo->buf_lock, flags);
+    up(&psinfo->buf_lock);
 
     psinfo->bufsize = oldsize ;
 }
